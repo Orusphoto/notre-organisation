@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💍 Mariage Sync - Organisation</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="dashboard">
+        <header>
+            <h1> Notre Organisation</h1>
+            <p>Le centre de commande de notre grand jour.</p>
+        </header>
+
+        <main class="grid-container">
+            
+            <section class="card">
+                <div class="card-header">
+                    <h2>✅ À Faire</h2>
+                    <button class="view-all" onclick="openModal('todoList', 'Toutes les tâches')">Voir tout</button>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="taskInput" placeholder="Nouvelle tâche...">
+                    <button onclick="addTask()">Ajouter</button>
+                </div>
+                <ul id="todoList" class="preview-list"></ul>
+            </section>
+
+            <section class="card">
+                <div class="card-header">
+                    <h2>💰 Budget</h2>
+                    <button class="view-all" onclick="openModal('budgetList', 'Détails du budget')">Voir tout</button>
+                </div>
+                <div class="input-stack">
+                    <input type="text" id="budgetItemName" placeholder="Poste (ex: Fleurs)">
+                    <div class="stepper">
+                        <button onclick="changeStep('budgetItemAmount', -10)">-</button>
+                        <input type="number" id="budgetItemAmount" value="0">
+                        <button onclick="changeStep('budgetItemAmount', 10)">+</button>
+                    </div>
+                    <button onclick="addBudgetItem()">Ajouter</button>
+                </div>
+                <ul id="budgetList" class="preview-list"></ul>
+                <div class="total-container">
+                    <strong>Total :</strong>
+                    <div class="total-val"><span id="totalAmount">0</span> €</div>
+                </div>
+            </section>
+
+            <section class="card">
+                <div class="card-header">
+                    <h2>👥 Invités (<span id="totalGuests">0</span>)</h2>
+                    <button class="view-all" onclick="openModal('guestList', 'Liste des invités')">Voir tout</button>
+                </div>
+                <div class="input-stack">
+                    <input type="text" id="guestName" placeholder="Nom (ex: Famille Dupont)">
+                    <div class="row-inputs">
+                        <input type="tel" id="guestPhone" placeholder="Téléphone" style="flex: 2;">
+                        <input type="number" id="guestCount" value="1" min="1" style="flex: 1; text-align: center;">
+                    </div>
+                    <button onclick="addGuest()">Ajouter l'invité</button>
+                </div>
+                <ul id="guestList" class="preview-list"></ul>
+            </section>
+
+            <section class="card">
+                <div class="card-header">
+                    <h2>⏳ Déroulé</h2>
+                    <button class="view-all" onclick="openModal('scheduleList', 'Planning')">Voir tout</button>
+                </div>
+                <div class="input-stack">
+                    <div class="row-inputs">
+                        <input type="text" id="scheduleTask" placeholder="Événement" style="flex: 2;">
+                        <input type="time" id="scheduleTime" value="14:00">
+                    </div>
+                    <button onclick="addScheduleItem()">Ajouter au planning</button>
+                </div>
+                <ul id="scheduleList" class="preview-list"></ul>
+            </section>
+
+            <section class="card">
+                <div class="card-header">
+                    <h2>⛪ Chants Église</h2>
+                    <button class="view-all" onclick="openModal('songList', 'Chants')">Voir tout</button>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="songInput" placeholder="Titre du chant...">
+                    <button onclick="addSong()">Ajouter</button>
+                </div>
+                <ul id="songList" class="preview-list"></ul>
+            </section>
+
+            <section class="card">
+                <div class="card-header">
+                    <h2>📁 Prestataires</h2>
+                    <button class="view-all" onclick="openModal('contactList', 'Contacts')">Voir tout</button>
+                </div>
+                <div class="input-stack">
+                    <input type="text" id="contactName" placeholder="Nom">
+                    <input type="text" id="contactInfo" placeholder="Tél ou Email">
+                    <input type="text" id="contactNote" placeholder="Note">
+                    <button onclick="addContact()">Ajouter le contact</button>
+                    <div class="row-inputs">
+                    </div>
+                    <input type="file" id="importFileInput" style="display:none" accept=".csv" onchange="handleImport(event)">
+                </div>
+                <ul id="contactList" class="preview-list"></ul>
+            </section>
+
+            <section class="card">
+                <div class="card-header">
+                    <h2>📄 Documents PDF</h2>
+                    <button class="view-all" onclick="openModal('docList', 'Mes Documents')">Voir tout</button>
+                </div>
+                <div class="input-stack">
+                    <input type="text" id="docName" placeholder="Nom du document">
+                    <input type="file" id="pdfFile" accept="application/pdf" style="font-size:12px; margin-top:10px;">
+                    <button id="uploadBtn" onclick="uploadPDF()">Uploader le PDF</button>
+                    <p id="uploadStatus" style="display:none; text-align:center; font-size:12px; color:var(--accent); margin-top:10px;">🚀 Envoi en cours...</p>
+                </div>
+                <ul id="docList" class="preview-list"></ul>
+            </section>
+
+        </main>
+    </div>
+
+    <div id="modalOverlay" class="modal-overlay" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2 id="modalTitle">Liste</h2>
+                <button class="close-btn" onclick="closeModal()">OK</button>
+            </div>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AlzaSyBiarUg_OyUOobCj_r5xUwsHjy5jIZZH-k",
+            authDomain: "mariage-syncronisation.firebaseapp.com",
+            projectId: "mariage-syncronisation",
+            storageBucket: "mariage-syncronisation.firebasestorage.app",
+            messagingSenderId: "361002797614",
+            appId: "1:361002797614:web:9d5445f44b713c5048edbf",
+            databaseURL: "https://mariage-syncronisation-default-rtdb.europe-west1.firebasedatabase.app"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        window.db = getDatabase(app);
+        window.storage = getStorage(app);
+        window.dbRef = ref; window.dbOnValue = onValue; window.dbSet = set;
+        window.sRef = sRef; window.uploadBytes = uploadBytes; window.getDownloadURL = getDownloadURL;
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>

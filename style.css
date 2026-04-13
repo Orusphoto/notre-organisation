@@ -1,0 +1,197 @@
+:root {
+    --accent: #0a84ff;
+    --glass: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.15);
+    --text-dim: #8e8e93;
+}
+
+body {
+    background: radial-gradient(at 0% 0%, rgba(10, 132, 255, 0.15), transparent 50%),
+                radial-gradient(at 100% 100%, rgba(191, 10, 255, 0.1), transparent 50%),
+                #000;
+    background-attachment: fixed;
+    color: white; font-family: -apple-system, system-ui, sans-serif;
+    margin: 0; padding: 40px 20px; min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+}
+
+.dashboard { max-width: 1100px; margin: 0 auto; }
+header { margin-bottom: 50px; }
+
+.grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
+
+.card {
+    background: var(--glass); backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    border-radius: 28px; padding: 25px; border: 1px solid var(--glass-border);
+    display: flex; flex-direction: column; margin-bottom: 20px;
+}
+
+/* ALIGNEMENT BOUTONS HAUT DE CARTE */
+.card-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 25px;
+    width: 100%;
+}
+.card-header h2 { margin: 0; font-size: 20px; }
+
+.view-all {
+    all: unset !important;
+    background: rgba(10, 132, 255, 0.12) !important;
+    color: var(--accent) !important;
+    padding: 6px 14px !important;
+    border-radius: 14px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+}
+
+/* INPUTS ET BUTTONS */
+.input-stack, .input-group { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 18px; margin-bottom: 20px; }
+.row-inputs { display: flex; gap: 10px; margin-top: 5px; align-items: center; }
+input { background: transparent; border: none; color: white; width: 100%; padding: 12px; font-size: 16px; outline: none; }
+
+input[type="time"] {
+    background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px !important; padding: 8px !important; color: white !important; width: 80px !important; text-align: center; color-scheme: dark;
+}
+
+button:not(.view-all, .delete-btn, .close-btn, .stepper button) { 
+    background: var(--accent); color: white; border: none; padding: 15px; 
+    border-radius: 15px; width: 100%; font-weight: 600; cursor: pointer; margin-top: 10px;
+}
+
+/* STEPPER */
+.stepper { display: flex; align-items: center; background: rgba(255,255,255,0.05); border-radius: 14px; border: 1px solid rgba(255,255,255,0.1); overflow: hidden; }
+.stepper button { all: unset; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 20px; cursor: pointer; }
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+/* LISTES */
+li { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 0.5px solid rgba(255,255,255,0.1); }
+.time-badge { background: rgba(10, 132, 255, 0.15); color: var(--accent); padding: 4px 10px; border-radius: 10px; font-weight: 700; margin-right: 12px; }
+.price-tag { color: var(--accent); font-weight: 700; font-size: 17px; }
+.guest-badge {
+    background: rgba(10, 132, 255, 0.15) !important;
+    color: var(--accent) !important;
+    padding: 3px 10px !important;
+    border-radius: 8px !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    white-space: nowrap !important;
+    display: inline-flex !important;
+    align-items: center;
+}
+.doc-link { color: white; text-decoration: none; display: flex; align-items: center; gap: 10px; }
+
+.delete-btn { all: unset !important; cursor: pointer; font-size: 18px; padding: 8px; opacity: 0.5; }
+.delete-btn:hover { color: #ff453a; opacity: 1; }
+
+.export-btn { background: rgba(255, 255, 255, 0.1) !important; color: white !important; font-size: 14px !important; }
+
+/* TOTALS */
+.total-container { margin-top: auto; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 18px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--glass-border); }
+.total-val { color: var(--accent); font-weight: 800; font-size: 18px; }
+
+/* MODALE */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); display: none; justify-content: center; align-items: center; z-index: 1000; }
+.modal-overlay.active { display: flex; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+.modal-content {
+    background: #1c1c1e;
+    padding: 30px;
+    border-radius: 32px;
+    width: 92%;
+    max-width: 480px;
+    border: 1px solid var(--glass-border);
+    
+    /* --- LES LIGNES À AJOUTER/VÉRIFIER --- */
+    max-height: 80vh; /* La fenêtre ne dépassera jamais 80% de la hauteur de l'écran */
+    overflow-y: auto; /* Autorise le défilement vertical si c'est trop long */
+    /* ------------------------------------ */
+
+    transform: scale(0.85);
+    opacity: 0;
+    transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* On stylise la barre de défilement pour qu'elle soit discrète (style Apple) */
+.modal-content::-webkit-scrollbar {
+    width: 6px;
+}
+.modal-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+.modal-overlay.active .modal-content { transform: scale(1); opacity: 1; }
+.modal-header { display: flex !important; justify-content: space-between !important; align-items: center !important; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.close-btn { all: unset !important; color: var(--accent); cursor: pointer; font-weight: 600; font-size: 17px; }
+
+/* ANIMATIONS */
+@keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+.item-anim { animation: slideIn 0.4s ease forwards; }
+.removing { opacity: 0; transform: scale(0.9); transition: 0.3s; }
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+    body { padding: 20px 15px; }
+    .grid-container { grid-template-columns: 1fr; }
+}
+/* --- GESTION DE L'APERÇU (3 ÉLÉMENTS MAX) --- */
+
+/* On cache tous les éléments à partir du 4ème dans les cartes du dashboard */
+.card .preview-list li:nth-child(n+4) {
+    display: none !important;
+}
+
+/* On s'assure que TOUS les éléments s'affichent quand on ouvre la modale */
+.modal-content li {
+    display: flex !important;
+}
+
+/* Petit bonus : un effet de fondu sur le 3ème élément pour montrer qu'il y a une suite */
+.card .preview-list li:nth-child(3) {
+    mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+    border-bottom: none;
+}
+/* --- NOUVEAU STYLE POUR LES INVITÉS --- */
+
+.guest-info-container {
+    display: flex;
+    flex-direction: column; /* Force l'alignement vertical */
+    gap: 6px; /* Espace entre le nom et la ligne du dessous */
+    width: 100%;
+    text-align: left;
+}
+
+.guest-name {
+    font-size: 17px;
+    font-weight: 700;
+    color: white;
+    display: block; /* Prend toute la largeur */
+}
+
+.guest-details-row {
+    display: flex;
+    align-items: center; /* Aligne le badge et le tel sur la même ligne */
+    gap: 12px;
+}
+
+.guest-phone-display {
+    color: var(--text-dim);
+    font-size: 13px;
+    letter-spacing: 0.3px;
+}
+
+/* On s'assure que le badge est toujours propre */
+.guest-badge {
+    background: rgba(10, 132, 255, 0.15) !important;
+    color: var(--accent) !important;
+    padding: 2px 8px !important;
+    border-radius: 8px !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    white-space: nowrap !important;
+    flex-shrink: 0;
+}
